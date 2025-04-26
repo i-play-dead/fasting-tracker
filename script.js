@@ -49,8 +49,10 @@ function updateTimer() {
     const percent = Math.min(100, (totalSeconds / goalSeconds) * 100);
     document.getElementById('goalStatus').innerText = 
       `Goal Progress: ${percent.toFixed(1)}%`;
+    document.getElementById('progressBar').style.width = `${percent}%`;
   }
 }
+
 
 function pad(num) {
   return num.toString().padStart(2, '0');

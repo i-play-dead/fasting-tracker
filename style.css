@@ -1,11 +1,15 @@
 body {
-  font-size: 4vw; /* responsive */
-  background: linear-gradient(to bottom right, #ffe4e1, #fffaf0); /* soft pastel background */
+  font-size: 4vw;
+  background: linear-gradient(135deg, #ffe4e1, #fffaf0);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   min-height: 100vh;
   margin: 0;
   padding: 20px;
   box-sizing: border-box;
 }
+
 
 h1 {
   font-size: 6vw;

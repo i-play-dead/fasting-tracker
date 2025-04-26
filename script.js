@@ -4,23 +4,6 @@ let isPaused = false;
 let pausedTime = 0;
 let goalHours = 0;
 
-// Create the progress circle
-let bar = new ProgressBar.Circle('#progressContainer', {
-  color: '#00bfff',
-  strokeWidth: 6,
-  trailWidth: 2,
-  trailColor: '#eee',
-  easing: 'easeInOut',
-  duration: 1400,
-  from: { color: '#00bfff', width: 6 },
-  to: { color: '#00ff00', width: 6 },
-  step: function(state, circle) {
-    circle.path.setAttribute('stroke', state.color);
-    circle.path.setAttribute('stroke-width', state.width);
-  }
-});
-bar.set(0); // Start empty
-
 function startFast() {
   startTime = Date.now();
   pausedTime = 0;
@@ -50,7 +33,6 @@ function stopFast() {
   saveFast(duration);
   document.getElementById('timer').innerText = "00:00:00";
   document.getElementById('status').innerText = "Not Fasting";
-  bar.set(0); // Reset progress bar
 }
 
 function updateTimer() {
@@ -59,13 +41,14 @@ function updateTimer() {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  document.getElementById('timer').innerText = 
+  document.getElementById('timer').innerText =
     `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 
   if (goalHours) {
-    const percent = Math.min(1, (elapsedMs / (goalHours * 60 * 60 * 1000)));
-    bar.set(percent); // Fill the circle
-    document.getElementById('goalStatus').innerText = `Goal: ${(percent * 100).toFixed(1)}% completed.`;
+    const goalSeconds = goalHours * 3600;
+    const percent = Math.min(100, (totalSeconds / goalSeconds) * 100);
+    document.getElementById('goalStatus').innerText = 
+      `Goal Progress: ${percent.toFixed(1)}%`;
   }
 }
 
@@ -120,28 +103,5 @@ function setGoal() {
   }
 }
 
-function saveNote() {
-  const noteText = document.getElementById('feelingNote').value.trim();
-  if (noteText !== "") {
-    let notes = JSON.parse(localStorage.getItem('feelingNotes')) || [];
-    notes.push(noteText);
-    localStorage.setItem('feelingNotes', JSON.stringify(notes));
-    document.getElementById('feelingNote').value = "";
-    updateNotes();
-  }
-}
-
-function updateNotes() {
-  const notesList = document.getElementById('notes');
-  notesList.innerHTML = '';
-  const notes = JSON.parse(localStorage.getItem('feelingNotes')) || [];
-  notes.forEach(note => {
-    const li = document.createElement('li');
-    li.innerText = note;
-    notesList.appendChild(li);
-  });
-}
-
 // Initialize
 updateHistory();
-updateNotes();

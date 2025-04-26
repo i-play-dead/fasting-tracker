@@ -1,7 +1,12 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Arial Rounded MT Bold', sans-serif;
   text-align: center;
+  background: linear-gradient(to bottom, #ffe4e1, #fdf6f0); /* pastel pink-beige gradient */
+  background-attachment: fixed;
+  background-size: cover;
+  color: #7c6e65;
   padding: 20px;
+  margin: 0;
 }
 
 #timer {

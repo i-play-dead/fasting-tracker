@@ -1,3 +1,10 @@
+let startTime;
+let interval;
+let isPaused = false;
+let pausedTime = 0;
+let goalHours = 0;
+
+// Create the progress circle
 let bar = new ProgressBar.Circle('#progressContainer', {
   color: '#00bfff',
   strokeWidth: 6,
@@ -14,110 +21,85 @@ let bar = new ProgressBar.Circle('#progressContainer', {
 });
 bar.set(0); // Start empty
 
-let fastingStart = localStorage.getItem('fastingStart');
-let isPaused = localStorage.getItem('isPaused') === 'true'; // Save pause status
-
-function startFasting() {
-  if (!fastingStart) {
-    fastingStart = Date.now();
-    localStorage.setItem('fastingStart', fastingStart);
-  }
+function startFast() {
+  startTime = Date.now();
+  pausedTime = 0;
   isPaused = false;
-  localStorage.setItem('isPaused', 'false');
-  updateTimer();
+  document.getElementById('status').innerText = "Fasting...";
+  interval = setInterval(updateTimer, 1000);
 }
 
-function pauseFasting() {
-  isPaused = true;
-  localStorage.setItem('isPaused', 'true');
+function pauseFast() {
+  if (!isPaused) {
+    clearInterval(interval);
+    pausedTime = Date.now() - startTime;
+    isPaused = true;
+    document.getElementById('status').innerText = "Paused";
+  } else {
+    startTime = Date.now() - pausedTime;
+    interval = setInterval(updateTimer, 1000);
+    isPaused = false;
+    document.getElementById('status').innerText = "Fasting...";
+  }
 }
 
-function stopFasting() {
-  if (fastingStart && !isPaused) {
-    saveToHistory(); // Save only if a real fast was ongoing
-  }
-  localStorage.removeItem('fastingStart');
-  localStorage.removeItem('isPaused');
-  fastingStart = null;
-  isPaused = false;
-  document.getElementById('timer').innerText = "Not fasting yet.";
-  updateHistory();
+function stopFast() {
+  clearInterval(interval);
+  const endTime = Date.now();
+  const duration = endTime - startTime;
+  saveFast(duration);
+  document.getElementById('timer').innerText = "00:00:00";
+  document.getElementById('status').innerText = "Not Fasting";
+  bar.set(0); // Reset progress bar
 }
 
 function updateTimer() {
-  if (fastingStart && !isPaused) {
-    const now = Date.now();
-    const elapsedMs = now - fastingStart;
-    const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
-    document.getElementById('timer').innerText = `Fasting for ${hours}h ${minutes}m ${seconds}s`;
-  } else if (fastingStart && isPaused) {
-    document.getElementById('timer').innerText = "Paused.";
+  const elapsedMs = Date.now() - startTime;
+  const totalSeconds = Math.floor(elapsedMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  document.getElementById('timer').innerText = 
+    `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+  if (goalHours) {
+    const percent = Math.min(1, (elapsedMs / (goalHours * 60 * 60 * 1000)));
+    bar.set(percent); // Fill the circle
+    document.getElementById('goalStatus').innerText = `Goal: ${(percent * 100).toFixed(1)}% completed.`;
   }
 }
 
-// Update timer every second
-setInterval(updateTimer, 1000);
-updateTimer();
-function saveToHistory() {
-  const now = Date.now();
-  const elapsedMs = now - fastingStart;
-  const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
-  const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
-  
-  const entry = `Fasted for ${hours}h ${minutes}m ${seconds}s`;
+function pad(num) {
+  return num.toString().padStart(2, '0');
+}
 
+function saveFast(duration) {
   let history = JSON.parse(localStorage.getItem('fastHistory')) || [];
-  history.push(entry);
+  history.push({
+    date: new Date().toLocaleString(),
+    duration: formatDuration(duration)
+  });
   localStorage.setItem('fastHistory', JSON.stringify(history));
+  updateHistory();
+}
+
+function formatDuration(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
 }
 
 function updateHistory() {
   const historyList = document.getElementById('history');
   historyList.innerHTML = '';
   const history = JSON.parse(localStorage.getItem('fastHistory')) || [];
-  history.forEach(item => {
+  history.forEach(entry => {
     const li = document.createElement('li');
-    li.innerText = item;
+    li.innerText = `${entry.date} - ${entry.duration}`;
     historyList.appendChild(li);
   });
-}
-let goalHours = localStorage.getItem('goalHours') || null;
-
-function setGoal() {
-  const input = document.getElementById('goalHours').value;
-  if (input) {
-    goalHours = input;
-    localStorage.setItem('goalHours', goalHours);
-    updateTimer();
-  }
-}
-
-function updateTimer() {
-  if (fastingStart && !isPaused) {
-    const now = Date.now();
-    const elapsedMs = now - fastingStart;
-    const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
-    document.getElementById('timer').innerText = `Fasting for ${hours}h ${minutes}m ${seconds}s`;
-    
-    if (goalHours) {
-      const percent = Math.min(100, (elapsedMs / (goalHours * 60 * 60 * 1000)) * 100);
-      document.getElementById('goalStatus').innerText = `Goal: ${percent.toFixed(1)}% completed.`;
-    }
-  } else if (fastingStart && isPaused) {
-    document.getElementById('timer').innerText = "Paused.";
-  } else {
-    document.getElementById('goalStatus').innerText = "";
-  }
-}
-if (goalHours) {
-  const percent = Math.min(1, (elapsedMs / (goalHours * 60 * 60 * 1000)));
-  bar.set(percent); // Fill the circle!
-  document.getElementById('goalStatus').innerText = `Goal: ${(percent * 100).toFixed(1)}% completed.`;
 }
 
 function resetHistory() {
@@ -126,6 +108,18 @@ function resetHistory() {
     updateHistory();
   }
 }
+
+function setGoal() {
+  const input = document.getElementById('goalInput').value;
+  goalHours = parseFloat(input);
+  if (isNaN(goalHours) || goalHours <= 0) {
+    goalHours = 0;
+    document.getElementById('goalStatus').innerText = "Invalid goal.";
+  } else {
+    document.getElementById('goalStatus').innerText = `Goal set: ${goalHours} hours.`;
+  }
+}
+
 function saveNote() {
   const noteText = document.getElementById('feelingNote').value.trim();
   if (noteText !== "") {
@@ -148,9 +142,6 @@ function updateNotes() {
   });
 }
 
-updateNotes(); // Call it when starting
-
-
-
-updateHistory(); // Call it at startup
-
+// Initialize
+updateHistory();
+updateNotes();

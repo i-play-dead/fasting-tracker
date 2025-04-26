@@ -114,6 +114,12 @@ function updateTimer() {
     document.getElementById('goalStatus').innerText = "";
   }
 }
+if (goalHours) {
+  const percent = Math.min(1, (elapsedMs / (goalHours * 60 * 60 * 1000)));
+  bar.set(percent); // Fill the circle!
+  document.getElementById('goalStatus').innerText = `Goal: ${(percent * 100).toFixed(1)}% completed.`;
+}
+
 function resetHistory() {
   if (confirm("Are you sure you want to delete all history?")) {
     localStorage.removeItem('fastHistory');

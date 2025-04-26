@@ -1,3 +1,19 @@
+let bar = new ProgressBar.Circle('#progressContainer', {
+  color: '#00bfff',
+  strokeWidth: 6,
+  trailWidth: 2,
+  trailColor: '#eee',
+  easing: 'easeInOut',
+  duration: 1400,
+  from: { color: '#00bfff', width: 6 },
+  to: { color: '#00ff00', width: 6 },
+  step: function(state, circle) {
+    circle.path.setAttribute('stroke', state.color);
+    circle.path.setAttribute('stroke-width', state.width);
+  }
+});
+bar.set(0); // Start empty
+
 let fastingStart = localStorage.getItem('fastingStart');
 let isPaused = localStorage.getItem('isPaused') === 'true'; // Save pause status
 

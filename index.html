@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <title>Pastel Fasting Tracker 🌸</title>
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: 'Arial Rounded MT Bold', sans-serif;
@@ -228,6 +228,33 @@
       setTimeout(() => clearInterval(animation), 3000);
     }
   </script>
+  <script>
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installButton = document.createElement('button');
+    installButton.textContent = "🌟 Install App 🌟";
+    installButton.style.marginTop = "20px";
+    installButton.style.padding = "10px 20px";
+    installButton.style.backgroundColor = "#ffb6b9";
+    installButton.style.border = "none";
+    installButton.style.borderRadius = "10px";
+    installButton.style.fontSize = "1em";
+    installButton.style.cursor = "pointer";
+    installButton.onclick = () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install');
+        }
+        deferredPrompt = null;
+      });
+    };
+    document.body.appendChild(installButton);
+  });
+</script>
+
 
 </body>
 </html>

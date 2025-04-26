@@ -68,6 +68,37 @@ function updateHistory() {
     historyList.appendChild(li);
   });
 }
+let goalHours = localStorage.getItem('goalHours') || null;
+
+function setGoal() {
+  const input = document.getElementById('goalHours').value;
+  if (input) {
+    goalHours = input;
+    localStorage.setItem('goalHours', goalHours);
+    updateTimer();
+  }
+}
+
+function updateTimer() {
+  if (fastingStart && !isPaused) {
+    const now = Date.now();
+    const elapsedMs = now - fastingStart;
+    const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
+    const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+    document.getElementById('timer').innerText = `Fasting for ${hours}h ${minutes}m ${seconds}s`;
+    
+    if (goalHours) {
+      const percent = Math.min(100, (elapsedMs / (goalHours * 60 * 60 * 1000)) * 100);
+      document.getElementById('goalStatus').innerText = `Goal: ${percent.toFixed(1)}% completed.`;
+    }
+  } else if (fastingStart && isPaused) {
+    document.getElementById('timer').innerText = "Paused.";
+  } else {
+    document.getElementById('goalStatus').innerText = "";
+  }
+}
+
 
 updateHistory(); // Call it at startup
 

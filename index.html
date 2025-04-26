@@ -68,6 +68,17 @@
       font-size: 1.2em;
       color: #b39ddb;
       min-height: 30px;
+let username = localStorage.getItem('username');
+
+function askUsername() {
+  if (!username) {
+    username = prompt("What's your name?");
+    if (username) {
+      localStorage.setItem('username', username);
+    }
+  }
+}
+
     }
   </style>
 </head>
@@ -98,6 +109,12 @@
   <canvas id="confettiCanvas" style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
 
   <script>
+    function updateGreeting() {
+  if (username) {
+    document.getElementById('greeting').innerText = `Hello, ${username}! 🌸`;
+  }
+}
+
     let startTime, timerInterval;
     let isRunning = false;
     let goalHours = null;

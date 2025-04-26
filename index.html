@@ -1,39 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <script src="https://cdn.jsdelivr.net/npm/progressbar.js"></script>
-
-  <meta charset="UTF-8">
-  <title>Fasting Tracker</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<div>
   <h1>Fasting Tracker</h1>
-  
-  <div id="timer">Not fasting yet.</div>
-  
-  <button onclick="startFasting()">Start Fasting</button>
-  <button onclick="pauseFasting()">Pause Fasting</button>
-  <button onclick="stopFasting()">Stop Fasting</button>
-  <h2>Feeling Notes</h2>
-<textarea id="feelingNote" placeholder="How are you feeling?" rows="3" style="width:100%;"></textarea>
-<br>
-<button onclick="saveNote()">Save Note</button>
+  <p id="status">Not Fasting</p>
+  <p id="timer">00:00:00</p>
 
-<ul id="notes"></ul>
+  <button onclick="startFast()">Start</button>
+  <button onclick="pauseFast()">Pause/Resume</button>
+  <button onclick="stopFast()">Stop</button>
+  
+  <div>
+    <input id="goalInput" type="number" placeholder="Goal (hours)">
+    <button onclick="setGoal()">Set Goal</button>
+  </div>
+  <p id="goalStatus"></p>
 
   <h2>History</h2>
+  <ul id="history"></ul>
   <button onclick="resetHistory()">Reset History</button>
-<ul id="history"></ul>
-<h2>Goal</h2>
-  <div id="progressContainer" style="width:200px; height:200px; margin: 20px auto;"></div>
+</div>
 
-<input type="number" id="goalHours" placeholder="Enter goal hours" min="1">
-<button onclick="setGoal()">Set Goal</button>
-
-<div id="goalStatus"></div>
-
-
-  <script src="script.js"></script>
-</body>
-</html>
+<script src="script.js"></script>

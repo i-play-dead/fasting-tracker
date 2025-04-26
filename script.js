@@ -1,27 +1,46 @@
 let fastingStart = localStorage.getItem('fastingStart');
+let isPaused = localStorage.getItem('isPaused') === 'true'; // Save pause status
 
 function startFasting() {
-  fastingStart = Date.now();
-  localStorage.setItem('fastingStart', fastingStart);
+  if (!fastingStart) {
+    fastingStart = Date.now();
+    localStorage.setItem('fastingStart', fastingStart);
+  }
+  isPaused = false;
+  localStorage.setItem('isPaused', 'false');
   updateTimer();
 }
 
+function pauseFasting() {
+  isPaused = true;
+  localStorage.setItem('isPaused', 'true');
+}
+
 function stopFasting() {
+  if (fastingStart && !isPaused) {
+    saveToHistory(); // Save only if a real fast was ongoing
+  }
   localStorage.removeItem('fastingStart');
+  localStorage.removeItem('isPaused');
   fastingStart = null;
+  isPaused = false;
   document.getElementById('timer').innerText = "Not fasting yet.";
+  updateHistory();
 }
 
 function updateTimer() {
-  if (fastingStart) {
+  if (fastingStart && !isPaused) {
     const now = Date.now();
     const elapsedMs = now - fastingStart;
     const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
     const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-    document.getElementById('timer').innerText = `Fasting for ${hours}h ${minutes}m`;
+    const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+    document.getElementById('timer').innerText = `Fasting for ${hours}h ${minutes}m ${seconds}s`;
+  } else if (fastingStart && isPaused) {
+    document.getElementById('timer').innerText = "Paused.";
   }
 }
 
-// Update timer every minute
-setInterval(updateTimer, 60000);
+// Update timer every second
+setInterval(updateTimer, 1000);
 updateTimer();

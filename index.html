@@ -5,8 +5,6 @@
   <title>Pastel Fasting Tracker 🌸</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    <div id="greeting" style="font-size: 1.5em; margin-bottom: 10px;"></div>
-
     body {
       font-family: 'Arial Rounded MT Bold', sans-serif;
       text-align: center;
@@ -113,7 +111,7 @@ function askUsername() {
   <script>
     function updateGreeting() {
   if (username) {
-    document.getElementById('greeting').innerText = `Hello, ${username}! 🌸`;
+    document.getElementById('greeting').innerText = Hello, ${username}! 🌸;
   }
 }
 
@@ -133,16 +131,16 @@ function askUsername() {
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
       document.getElementById('timer').innerText =
-        `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        ${pad(hours)}:${pad(minutes)}:${pad(seconds)};
 
       if (goalHours) {
         const goalSeconds = goalHours * 3600;
         const percent = Math.min(100, (totalSeconds / goalSeconds) * 100);
         document.getElementById('goalStatus').innerText = 
-          `Goal Progress: ${percent.toFixed(1)}%`;
+          Goal Progress: ${percent.toFixed(1)}%;
 
         const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = `${percent}%`;
+        progressBar.style.width = ${percent}%;
 
         if (percent < 30) {
           progressBar.style.backgroundColor = '#ffb6b9'; // light pink
@@ -189,7 +187,7 @@ function askUsername() {
         const elapsedMs = endTime - startTime;
         const totalMinutes = Math.floor(elapsedMs / 60000);
         if (totalMinutes > 0) {
-          history.push(`${totalMinutes} minutes`);
+          history.push(${totalMinutes} minutes);
           updateHistory();
         }
       }
@@ -200,7 +198,7 @@ function askUsername() {
       const hours = prompt("Set your fasting goal (in hours):");
       if (hours && !isNaN(hours)) {
         goalHours = Number(hours);
-        document.getElementById('goalStatus').innerText = `Goal: ${goalHours} hours`;
+        document.getElementById('goalStatus').innerText = Goal: ${goalHours} hours;
         document.getElementById('message').innerText = "🌷 New goal set! You got this!";
       }
     }
@@ -210,7 +208,7 @@ function askUsername() {
       if (history.length === 0) {
         historyDiv.innerHTML = "No fasts yet.";
       } else {
-        historyDiv.innerHTML = history.map(h => `🌼 ${h}`).join('<br>');
+        historyDiv.innerHTML = history.map(h => 🌼 ${h}).join('<br>');
       }
     }
 
@@ -231,7 +229,7 @@ function askUsername() {
         y: Math.random() * canvas.height,
         size: Math.random() * 5 + 2,
         speed: Math.random() * 3 + 2,
-        color: `hsl(${Math.random() * 360}, 70%, 80%)`
+        color: hsl(${Math.random() * 360}, 70%, 80%)
       }));
 
       let animation = setInterval(() => {

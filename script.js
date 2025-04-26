@@ -44,3 +44,30 @@ function updateTimer() {
 // Update timer every second
 setInterval(updateTimer, 1000);
 updateTimer();
+function saveToHistory() {
+  const now = Date.now();
+  const elapsedMs = now - fastingStart;
+  const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
+  const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+  
+  const entry = `Fasted for ${hours}h ${minutes}m ${seconds}s`;
+
+  let history = JSON.parse(localStorage.getItem('fastHistory')) || [];
+  history.push(entry);
+  localStorage.setItem('fastHistory', JSON.stringify(history));
+}
+
+function updateHistory() {
+  const historyList = document.getElementById('history');
+  historyList.innerHTML = '';
+  const history = JSON.parse(localStorage.getItem('fastHistory')) || [];
+  history.forEach(item => {
+    const li = document.createElement('li');
+    li.innerText = item;
+    historyList.appendChild(li);
+  });
+}
+
+updateHistory(); // Call it at startup
+

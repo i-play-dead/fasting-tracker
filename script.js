@@ -49,7 +49,17 @@ function updateTimer() {
     const percent = Math.min(100, (totalSeconds / goalSeconds) * 100);
     document.getElementById('goalStatus').innerText = 
       `Goal Progress: ${percent.toFixed(1)}%`;
-    document.getElementById('progressBar').style.width = `${percent}%`;
+
+    const progressBar = document.getElementById('progressBar');
+    progressBar.style.width = `${percent}%`;
+
+    if (percent < 30) {
+      progressBar.style.backgroundColor = 'tomato';
+    } else if (percent < 70) {
+      progressBar.style.backgroundColor = 'gold';
+    } else {
+      progressBar.style.backgroundColor = 'lightgreen';
+    }
   }
 }
 

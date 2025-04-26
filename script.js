@@ -98,6 +98,13 @@ function updateTimer() {
     document.getElementById('goalStatus').innerText = "";
   }
 }
+function resetHistory() {
+  if (confirm("Are you sure you want to delete all history?")) {
+    localStorage.removeItem('fastHistory');
+    updateHistory();
+  }
+}
+
 
 
 updateHistory(); // Call it at startup

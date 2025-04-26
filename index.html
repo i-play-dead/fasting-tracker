@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pastel Fasting Tracker 🌸</title>
+  <style>
+    body {
+      font-family: 'Arial Rounded MT Bold', sans-serif;
+      text-align: center;
+      background-color: #fdf6f0;
+      color: #7c6e65;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      color: #ffb6b9;
+    }
+    #timer {
+      font-size: 3em;
+      margin: 20px 0;
+      color: #ffaaa5;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #ffdac1;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #e2c0b5;
+    }
+    #progressContainer {
+      width: 100%;
+      background-color: #f0e5de;
+      height: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    #progressBar {
+      width: 0%;
+      height: 100%;
+      background-color: lightpink;
+      border-radius: 10px;
+      transition: width 0.5s, background-color 0.5s;
+    }
+    #goalStatus {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #a1887f;
+    }
+    #history {
+      margin-top: 20px;
+      text-align: left;
+      padding: 10px;
+      background-color: #fff0f5;
+      border-radius: 10px;
+      font-size: 0.9em;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 1.2em;
+      color: #b39ddb;
+      min-height: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⏳ Fasting Tracker 🌸</h1>
+  <div id="timer">00:00:00</div>
+  
+  <button onclick="startTimer()">Start</button>
+  <button onclick="pauseTimer()">Pause</button>
+  <button onclick="resetTimer()">Reset</button>
+  <button onclick="setGoal()">Set Goal</button>
+  <button onclick="resetHistory()">Clear History</button>
+
+  <div id="progressContainer">
+    <div id="progressBar"></div>
+  </div>
+  
+  <div id="goalStatus">No goal set yet</div>
+
+  <div id="message">"Every second is a step closer to your best self 💖"</div>
+
+  <h2>Past Fasts 🕰</h2>
+  <div id="history">
+    No fasts yet.
+  </div>
+
+  <canvas id="confettiCanvas" style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
+
+  <script>
+    let startTime, timerInterval;
+    let isRunning = false;
+    let goalHours = null;
+    let history = [];
+
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function updateTimer() {
+      const elapsedMs = Date.now() - startTime;
+      const totalSeconds = Math.floor(elapsedMs / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      document.getElementById('timer').innerText =
+        `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+      if (goalHours) {
+        const goalSeconds = goalHours * 3600;
+        const percent = Math.min(100, (totalSeconds / goalSeconds) * 100);
+        document.getElementById('goalStatus').innerText = 
+          `Goal Progress: ${percent.toFixed(1)}%`;
+
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${percent}%`;
+
+        if (percent < 30) {
+          progressBar.style.backgroundColor = '#ffb6b9'; // light pink
+        } else if (percent < 70) {
+          progressBar.style.backgroundColor = '#ffdac1'; // pastel peach
+        } else {
+          progressBar.style.backgroundColor = '#c7ceea'; // pastel purple
+        }
+
+        if (percent >= 100) {
+          document.getElementById('message').innerText = "🎉 You did it! So proud of you!";
+          triggerConfetti();
+          pauseTimer();
+        }
+      }
+    }
+
+    function startTimer() {
+      if (!isRunning) {
+        startTime = Date.now() - (timerInterval ? timerInterval.elapsed : 0);
+        timerInterval = setInterval(updateTimer, 1000);
+        isRunning = true;
+        document.getElementById('message').innerText = "🌟 Stay strong, you're doing amazing!";
+      }
+    }
+
+    function pauseTimer() {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        timerInterval.elapsed = Date.now() - startTime;
+        isRunning = false;
+        document.getElementById('message').innerText = "⏸️ Taking a break is okay too!";
+      }
+    }
+
+    function resetTimer() {
+      if (isRunning) pauseTimer();
+      document.getElementById('timer').innerText = '00:00:00';
+      document.getElementById('progressBar').style.width = '0%';
+      document.getElementById('goalStatus').innerText = 'No goal set yet';
+      document.getElementById('message').innerText = "💖 New beginning, new strength!";
+      if (startTime) {
+        const endTime = Date.now();
+        const elapsedMs = endTime - startTime;
+        const totalMinutes = Math.floor(elapsedMs / 60000);
+        if (totalMinutes > 0) {
+          history.push(`${totalMinutes} minutes`);
+          updateHistory();
+        }
+      }
+      startTime = null;
+    }
+
+    function setGoal() {
+      const hours = prompt("Set your fasting goal (in hours):");
+      if (hours && !isNaN(hours)) {
+        goalHours = Number(hours);
+        document.getElementById('goalStatus').innerText = `Goal: ${goalHours} hours`;
+        document.getElementById('message').innerText = "🌷 New goal set! You got this!";
+      }
+    }
+
+    function updateHistory() {
+      const historyDiv = document.getElementById('history');
+      if (history.length === 0) {
+        historyDiv.innerHTML = "No fasts yet.";
+      } else {
+        historyDiv.innerHTML = history.map(h => `🌼 ${h}`).join('<br>');
+      }
+    }
+
+    function resetHistory() {
+      history = [];
+      updateHistory();
+      document.getElementById('message').innerText = "📜 History cleared!";
+    }
+
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 100 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 5 + 2,
+        speed: Math.random() * 3 + 2,
+        color: `hsl(${Math.random() * 360}, 70%, 80%)`
+      }));
+
+      let animation = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          p.y += p.speed;
+          if (p.y > canvas.height) p.y = 0;
+        });
+      }, 30);
+
+      setTimeout(() => clearInterval(animation), 3000);
+    }
+  </script>
+
+</body>
+</html>

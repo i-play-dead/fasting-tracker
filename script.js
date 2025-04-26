@@ -126,6 +126,29 @@ function resetHistory() {
     updateHistory();
   }
 }
+function saveNote() {
+  const noteText = document.getElementById('feelingNote').value.trim();
+  if (noteText !== "") {
+    let notes = JSON.parse(localStorage.getItem('feelingNotes')) || [];
+    notes.push(noteText);
+    localStorage.setItem('feelingNotes', JSON.stringify(notes));
+    document.getElementById('feelingNote').value = "";
+    updateNotes();
+  }
+}
+
+function updateNotes() {
+  const notesList = document.getElementById('notes');
+  notesList.innerHTML = '';
+  const notes = JSON.parse(localStorage.getItem('feelingNotes')) || [];
+  notes.forEach(note => {
+    const li = document.createElement('li');
+    li.innerText = note;
+    notesList.appendChild(li);
+  });
+}
+
+updateNotes(); // Call it when starting
 
 
 

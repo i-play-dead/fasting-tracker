@@ -1,13 +1,27 @@
 body {
-  font-family: 'Arial Rounded MT Bold', sans-serif;
-  text-align: center;
-  background: linear-gradient(to bottom, #ffe4e1, #fdf6f0); /* pastel pink-beige gradient */
-  background-attachment: fixed;
-  background-size: cover;
-  color: #7c6e65;
-  padding: 20px;
-  margin: 0;
+  font-size: 4vw; /* make the font-size adjust based on screen width */
 }
+
+h1 {
+  font-size: 6vw;
+}
+
+#timer {
+  font-size: 8vw;
+}
+
+button {
+  font-size: 4vw;
+}
+
+#goalStatus, #message {
+  font-size: 4vw;
+}
+
+#history {
+  font-size: 3.5vw;
+}
+
 
 #timer {
   font-size: 24px;
